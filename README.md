@@ -1,2 +1,2 @@
-# TP_REST
-TP_REST
+# TP_GRPC
+TP_GRPC
