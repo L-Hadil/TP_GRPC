@@ -2,7 +2,6 @@ package org.example.hotel_service.services;
 
 import hotel_service.*;
 import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.example.hotel_service.models.Offre;
@@ -32,7 +31,7 @@ public class HotelServiceImpl extends HotelServiceGrpc.HotelServiceImplBase {
     @Override
     public void getAvailability(AvailabilityRequest request, StreamObserver<AvailabilityResponse> responseObserver) {
         try {
-            // Vérification des identifiants de l'agence
+            // Vérification des identifiants
             if (!agenceRepository.existsByLoginAndMotDePasse(request.getAgencyUsername(), request.getAgencyPassword())) {
                 responseObserver.onError(
                         Status.PERMISSION_DENIED
@@ -45,7 +44,6 @@ public class HotelServiceImpl extends HotelServiceGrpc.HotelServiceImplBase {
             // Conversion des dates
             LocalDate startDate = LocalDate.parse(request.getStartDate());
             LocalDate endDate = LocalDate.parse(request.getEndDate());
-
             if (startDate.isAfter(endDate)) {
                 responseObserver.onError(
                         Status.INVALID_ARGUMENT
@@ -94,7 +92,6 @@ public class HotelServiceImpl extends HotelServiceGrpc.HotelServiceImplBase {
     @Override
     public void makeReservation(ReservationRequest request, StreamObserver<ReservationResponse> responseObserver) {
         try {
-            // Vérification des identifiants de l'agence
             if (!agenceRepository.existsByLoginAndMotDePasse(request.getAgencyUsername(), request.getAgencyPassword())) {
                 responseObserver.onError(
                         Status.PERMISSION_DENIED
@@ -104,13 +101,11 @@ public class HotelServiceImpl extends HotelServiceGrpc.HotelServiceImplBase {
                 return;
             }
 
-            // Vérification de l'offre
             Offre offre = offreRepository.findById(request.getOfferId())
                     .orElseThrow(() -> Status.NOT_FOUND
                             .withDescription("Offer not found.")
                             .asRuntimeException());
 
-            // Vérification si l'offre est déjà réservée
             if (reservationRepository.existsByOffreId(offre.getId())) {
                 responseObserver.onError(
                         Status.ALREADY_EXISTS
@@ -120,7 +115,6 @@ public class HotelServiceImpl extends HotelServiceGrpc.HotelServiceImplBase {
                 return;
             }
 
-            // Création de la réservation
             Reservation reservation = new Reservation();
             reservation.setOffre(offre);
             reservation.setNomClient(request.getClientName());
@@ -131,19 +125,13 @@ public class HotelServiceImpl extends HotelServiceGrpc.HotelServiceImplBase {
 
             reservation = reservationRepository.save(reservation);
 
-            // Conversion en message Protobuf
-            hotel_service.Reservation protoReservation = convertToProtoReservation(reservation);
-
-            // Construction de la réponse
             ReservationResponse response = ReservationResponse.newBuilder()
                     .setStatus("Confirmed")
-                    .setReservation(protoReservation)
+                    .setReservation(convertToProtoReservation(reservation))
                     .build();
 
             responseObserver.onNext(response);
             responseObserver.onCompleted();
-        } catch (StatusRuntimeException e) {
-            responseObserver.onError(e);
         } catch (Exception e) {
             responseObserver.onError(
                     Status.INTERNAL
@@ -154,22 +142,19 @@ public class HotelServiceImpl extends HotelServiceGrpc.HotelServiceImplBase {
         }
     }
 
-    // Méthode utilitaire pour convertir une entité Offre en message Protobuf Offer
     private Offer convertToProtoOffer(Offre offre) {
         return Offer.newBuilder()
                 .setId(offre.getId())
-                .setRoomType("Chambre Double") // Exemple, ajustez selon vos données
                 .setAgencyUsername(offre.getAgencyUsername())
-                .setAgencyPassword(offre.getAgencyPassword())
                 .setAvailabilityStart(offre.getAvailabilityStart().toString())
                 .setAvailabilityEnd(offre.getAvailabilityEnd().toString())
                 .setPrixAgence(offre.getPrixAgence())
                 .setNumberOfBeds(offre.getNumberOfBeds())
-                .setPictureUrl(offre.getPictureUrl())
+                .setPictureUrl(offre.getPictureUrl() != null ? offre.getPictureUrl() : "")
                 .build();
     }
 
-    // Méthode utilitaire pour convertir une entité Reservation en message Protobuf Reservation
+
     private hotel_service.Reservation convertToProtoReservation(Reservation reservation) {
         return hotel_service.Reservation.newBuilder()
                 .setId(reservation.getId())
