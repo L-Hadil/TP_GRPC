@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+package hotel_service;
+
+// Message pour une Offre
+message Offer {
+    int64 id = 1;
+    string agencyUsername = 2;         // Identifiant de l'agence
+    string agencyPassword = 3;         // Mot de passe de l'agence
+    string availabilityStart = 4;      // Date de début de disponibilité
+    string availabilityEnd = 5;        // Date de fin de disponibilité
+    double prixAgence = 6;             // Prix proposé à l'agence
+    int32 numberOfBeds = 7;            // Nombre de lits dans la chambre
+    string pictureUrl = 8;             // URL de l'image de la chambre
+}
+
+// Message pour une Réservation
+message Reservation {
+    int64 id = 1;
+    string nomClient = 2;              // Nom du client
+    string prenomClient = 3;           // Prénom du client
+    string dateDebut = 4;              // Date de début du séjour
+    string dateFin = 5;                // Date de fin du séjour
+    Offer offre = 6;                   // Offre associée à la réservation
+    string status = 7;                 // Statut de la réservation
+}
+
+// Requêtes et réponses pour le service gRPC
+message AvailabilityRequest {
+    string agencyUsername = 1;
+    string agencyPassword = 2;
+    string city = 3;                   // Ville où chercher les hôtels
+    int32 stars = 4;                   // Nombre minimum d'étoiles
+    int32 guests = 5;                  // Nombre de personnes
+    string startDate = 6;              // Date de début du séjour
+    string endDate = 7;                // Date de fin du séjour
+}
+
+message AvailabilityResponse {
+    repeated Offer offers = 1;         // Liste des offres disponibles
+}
+
+message ReservationRequest {
+    string agencyUsername = 1;         // Identifiant de l'agence
+    string agencyPassword = 2;         // Mot de passe de l'agence
+    int64 offerId = 3;                 // Identifiant de l'offre choisie
+    string clientName = 4;             // Nom du client
+    string clientSurname = 5;          // Prénom du client
+}
+
+message ReservationResponse {
+    string status = 1;                 // Statut de la réservation
+    Reservation reservation = 2;       // Détails de la réservation
+}
+
+// Définition du service gRPC
+service HotelService {
+    rpc GetAvailability (AvailabilityRequest) returns (AvailabilityResponse);
+    rpc MakeReservation (ReservationRequest) returns (ReservationResponse);
+}

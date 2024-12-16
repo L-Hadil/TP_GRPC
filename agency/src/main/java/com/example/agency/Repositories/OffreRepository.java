@@ -1,15 +1,11 @@
 package com.example.agency.Repositories;
 
 import com.example.agency.models.Offre;
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Repository
 public interface OffreRepository extends JpaRepository<Offre, Long> {
@@ -20,6 +16,4 @@ public interface OffreRepository extends JpaRepository<Offre, Long> {
 
     @Query("SELECT o.prixAgence FROM Offre o WHERE o.id = :offreId")
     Double findPrixAgenceById(@Param("offreId") Long offreId);
-
-
 }

@@ -4,9 +4,10 @@ import hotel_service.*;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
+
+
 import org.example.hotel_service.models.Offre;
 import org.example.hotel_service.models.Reservation;
-
 import org.example.hotel_service.repositories.AgenceRepository;
 import org.example.hotel_service.repositories.OffreRepository;
 import org.example.hotel_service.repositories.ReservationRepository;
@@ -14,7 +15,6 @@ import org.example.hotel_service.repositories.ReservationRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-
 @GrpcService
 public class HotelServiceImpl extends HotelServiceGrpc.HotelServiceImplBase {
 
