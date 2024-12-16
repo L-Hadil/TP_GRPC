@@ -85,7 +85,5 @@ Ce projet met en œuvre une application de réservation d’hôtels basée sur l
 - **Interface CLI** :
     - Permet à l’utilisateur de chercher des offres et réserver un hôtel.
 - **HotelServiceClient** :
-    - Communique avec le serveur via gRPC.
-- **GrpcConverter** :
-    - Facilite la conversion des objets entre les formats locaux et gRPC.
+    - Communique avec le serveur via gRPC pour recuperer les offres et proposer des prix.
 
