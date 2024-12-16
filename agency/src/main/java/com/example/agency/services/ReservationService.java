@@ -1,12 +1,12 @@
 package com.example.agency.services;
 
-
+import com.example.agency.Repositories.ClientRepository;
+import com.example.agency.Repositories.ReservationRepository;
 import com.example.agency.models.Client;
 import com.example.agency.models.Reservation;
-import com.example.agency.models.Offre;
-import com.example.agency.Repositories.ReservationRepository;
-import com.example.agency.Repositories.ClientRepository;
+
 import hotel_service.HotelServiceGrpc;
+import hotel_service.HotelServiceOuterClass;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,19 +32,23 @@ public class ReservationService {
         this.stub = HotelServiceGrpc.newBlockingStub(channel);
     }
 
+    /**
+     * Effectue une réservation via le service gRPC et enregistre localement.
+     */
     public Reservation makeReservation(String offerId, String clientName, String clientEmail, String paymentCard, String expiryDate) {
-        // Vérifier ou créer un client
+        // Trouver ou créer le client.
         Client client = clientRepository.findByEmail(clientEmail).orElseGet(() -> {
             Client newClient = new Client();
-            newClient.setNom(clientName.split(" ")[0]);
-            newClient.setPrenom(clientName.split(" ")[1]);
+            String[] nameParts = clientName.split(" ");
+            newClient.setNom(nameParts[0]);
+            newClient.setPrenom(nameParts.length > 1 ? nameParts[1] : "");
             newClient.setEmail(clientEmail);
             return clientRepository.save(newClient);
         });
 
-        // Appel gRPC pour effectuer la réservation
+        // Construire la requête gRPC pour effectuer la réservation.
         HotelServiceOuterClass.ReservationRequest grpcRequest = HotelServiceOuterClass.ReservationRequest.newBuilder()
-                .setOfferId(offerId)
+                .setOfferId(Long.parseLong(offerId))
                 .setClientName(clientName)
                 .setClientEmail(clientEmail)
                 .setPaymentCard(paymentCard)
@@ -53,7 +57,7 @@ public class ReservationService {
 
         HotelServiceOuterClass.ReservationResponse grpcResponse = stub.makeReservation(grpcRequest);
 
-        // Enregistrer localement la réservation
+        // Enregistrer la réservation localement.
         Reservation reservation = new Reservation();
         reservation.setId(Long.valueOf(grpcResponse.getReservationId()));
         reservation.setDateReservation(LocalDateTime.now());
