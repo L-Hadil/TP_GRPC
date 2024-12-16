@@ -3,9 +3,9 @@ package com.example.agency.Client;
 
 import com.example.agency.models.Offre;
 import hotel_service.HotelServiceGrpc;
-import org.springframework.stereotype.Service;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
