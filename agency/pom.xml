@@ -1,37 +1,46 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+
+	<!-- Spring Boot Parent Starter -->
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.4.0</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/> <!-- Aucun chemin vers un parent local -->
 	</parent>
+
+	<!-- Project Metadata -->
 	<groupId>com.example</groupId>
 	<artifactId>agency</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>agency</name>
 	<description>Agency service with gRPC</description>
 
+	<!-- Properties -->
 	<properties>
 		<java.version>17</java.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<grpc.version>1.56.0</grpc.version>
 		<protobuf.version>3.22.0</protobuf.version>
 		<protobuf.plugin.version>0.6.1</protobuf.plugin.version>
 	</properties>
 
+	<!-- Dependencies -->
 	<dependencies>
-		<!-- Spring Boot JPA for database interaction -->
+		<!-- Spring Boot JPA -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+
+		<!-- Dépendance vers le module commun -->
 		<dependency>
 			<groupId>com.example</groupId>
 			<artifactId>common</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
-
 
 		<!-- MySQL Driver -->
 		<dependency>
@@ -67,7 +76,6 @@
 			<version>1.3.2</version>
 		</dependency>
 
-
 		<!-- Protobuf -->
 		<dependency>
 			<groupId>com.google.protobuf</groupId>
@@ -76,7 +84,7 @@
 		</dependency>
 	</dependencies>
 
-
+	<!-- Build Configuration -->
 	<build>
 		<extensions>
 			<extension>
@@ -86,6 +94,7 @@
 			</extension>
 		</extensions>
 		<plugins>
+			<!-- Protobuf Maven Plugin -->
 			<plugin>
 				<groupId>org.xolstice.maven.plugins</groupId>
 				<artifactId>protobuf-maven-plugin</artifactId>
@@ -104,11 +113,22 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<!-- Spring Boot Maven Plugin -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+
+			<!-- UTF-8 Configuration -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>3.3.1</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
-
 </project>
